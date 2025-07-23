@@ -1,0 +1,20 @@
+name: Run GA4 Collector
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-ga4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run collector
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ./credentials/ga4_key.json
+        run: python main.py

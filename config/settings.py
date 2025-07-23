@@ -1,0 +1,6 @@
+GA4_PROPERTY_ID = "373476773"
+START_DATE = "2024-07-20"
+END_DATE = "2024-07-20"
+SERVICE_ACCOUNT_FILE = "credentials/ga4_key.json"
+SHEETS_CREDS_FILE = "credentials/sheets_key.json"
+SHEETS_KEY = "1pLf57-3Z22IhZHGmyAEsUan_l7pb4Hsa4xgNhMXqNgM"
