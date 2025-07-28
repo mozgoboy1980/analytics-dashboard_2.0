@@ -25,6 +25,8 @@ def dashboard_form():
 
       <h3>YouTube</h3>
       <form method="post" action="/download-youtube">
+        <label>Дата начала: <input type="date" name="start"></label><br><br>
+        <label>Дата окончания: <input type="date" name="end"></label><br><br>
         <button type="submit">Скачать YouTube CSV</button>
       </form>
     </body>
@@ -49,12 +51,12 @@ def download_site(start: str = Form(...), end: str = Form(...)):
     })
 
 @app.post("/download-youtube", response_class=StreamingResponse)
-def download_youtube():
-    yt_data = fetch_youtube_data()
+def download_youtube(start: str = Form(...), end: str = Form(...)):
+    yt_data = fetch_youtube_data(start, end)
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["YouTube Summary"])
+    writer.writerow(["YouTube Analytics:", f"{start} — {end}"])
     for key, value in yt_data.items():
         writer.writerow([key, value])
 

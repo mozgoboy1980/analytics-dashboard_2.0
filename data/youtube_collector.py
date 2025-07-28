@@ -1,9 +1,8 @@
 import os
 import json
-import google.auth.transport.requests
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 SCOPES = ["https://www.googleapis.com/auth/yt-analytics.readonly"]
@@ -27,14 +26,17 @@ def get_authenticated_service():
 
     return build("youtubeAnalytics", "v2", credentials=creds)
 
-def fetch_youtube_data(start_date, end_date):
+def fetch_youtube_data(start_date="2025-07-01", end_date="2025-07-28"):
     service = get_authenticated_service()
-    request = service.reports().query(
+    response = service.reports().query(
         ids="channel==MINE",
         startDate=start_date,
         endDate=end_date,
-        metrics="views,estimatedMinutesWatched,averageViewDuration,subscribersGained",
-        dimensions="country",
-        sort="-views"
-    )
-    return request.execute()
+        metrics="views,estimatedMinutesWatched,averageViewDuration,subscribersGained"
+    ).execute()
+
+    # Преобразуем в словарь {название: значение}
+    headers = response["columnHeaders"]
+    values = response["rows"][0] if "rows" in response else [0] * len(headers)
+
+    return {h["name"]: v for h, v in zip(headers, values)}
