@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
 from typing import Optional
-from data.ga4_collector import fetch_ga4_data
+from data.ga4_collector import fetch_total_ga4_data as fetch_ga4_data
 import csv
 import io
 
@@ -31,20 +31,13 @@ def process_form(
     metrics = ["activeUsers", "sessions", "screenPageViews"]
     data = fetch_ga4_data(start, end, metrics)
 
-    # Суммируем по всем строкам
-    totals = [0] * len(metrics)
-    for row in data:
-        for i in range(len(metrics)):
-            totals[i] += int(row[2 + i])  # пропускаем первые 2 колонки
-
     output = io.StringIO()
     writer = csv.writer(output)
 
-    # Заголовки в нужном формате
     writer.writerow(["Google Analytics:", f"{start} — {end}"])
-    writer.writerow(["Web page unique users", totals[0]])
-    writer.writerow(["Sessions", totals[1]])
-    writer.writerow(["Pageviews", totals[2]])
+    writer.writerow(["Web page unique users", data[0]])
+    writer.writerow(["Sessions", data[1]])
+    writer.writerow(["Pageviews", data[2]])
 
     output.seek(0)
     return StreamingResponse(output, media_type="text/csv", headers={
